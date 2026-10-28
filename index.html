@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>電腦與網路基礎知識測驗</title>
+  <style>
+    :root {
+      --bg: #f4f7fb;
+      --card: #ffffff;
+      --primary: #2d6cdf;
+      --primary-dark: #1c50b7;
+      --accent: #e9f1ff;
+      --text: #1f2937;
+      --muted: #667085;
+      --success: #1ea76b;
+      --success-bg: #eafaf2;
+      --error: #d93025;
+      --error-bg: #fdecec;
+      --border: #dfe7f5;
+      --shadow: 0 12px 30px rgba(29, 78, 216, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", "Microsoft JhengHei", sans-serif;
+      background: linear-gradient(180deg, #eef4ff 0%, var(--bg) 100%);
+      color: var(--text);
+    }
+
+    .container {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 28px 16px 60px;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #2d6cdf, #4b8bff);
+      color: white;
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+      padding: 28px 24px;
+      margin-bottom: 24px;
+    }
+
+    .header h1 {
+      margin: 0 0 8px;
+      font-size: clamp(1.9rem, 2vw + 1rem, 2.8rem);
+      line-height: 1.2;
+    }
+
+    .header p {
+      margin: 0;
+      font-size: 1rem;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .score-chip {
+      display: inline-block;
+      margin-top: 16px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    .quiz-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+      padding: 20px 18px;
+    }
+
+    .question-card {
+      background: #fafcff;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 18px 16px;
+      margin-bottom: 18px;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    }
+
+    .question-card.missing {
+      border-color: #f6b7b1;
+      background: #fff7f6;
+      box-shadow: 0 0 0 3px rgba(217, 48, 37, 0.08);
+    }
+
+    .question-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .question-number {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--primary);
+      background: var(--accent);
+      border-radius: 999px;
+      padding: 6px 10px;
+    }
+
+    .question-text {
+      margin: 0 0 14px;
+      font-size: 1.08rem;
+      line-height: 1.7;
+      font-weight: 600;
+    }
+
+    .options {
+      display: grid;
+      gap: 10px;
+    }
+
+    .option {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .option:hover {
+      border-color: #b9ccf8;
+      background: #f8faff;
+      transform: translateY(-1px);
+    }
+
+    .option input[type="radio"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--primary);
+      flex-shrink: 0;
+      margin: 0;
+      cursor: pointer;
+    }
+
+    .option-label {
+      cursor: pointer;
+      line-height: 1.6;
+      color: var(--text);
+      font-size: 1rem;
+      flex: 1;
+    }
+
+    .submit-row {
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 12px;
+      padding: 14px 28px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+    }
+
+    .btn:active {
+      transform: translateY(1px);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      box-shadow: 0 10px 20px rgba(45, 108, 223, 0.25);
+    }
+
+    .btn-primary:hover {
+      box-shadow: 0 12px 24px rgba(45, 108, 223, 0.3);
+    }
+
+    .btn-secondary {
+      background: #eef4ff;
+      color: var(--primary-dark);
+      border: 1px solid #cfe0ff;
+    }
+
+    .btn-secondary:hover {
+      background: #e5efff;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .results {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+      padding: 20px 18px;
+      margin-top: 20px;
+    }
+
+    .results h2 {
+      margin: 0 0 10px;
+      font-size: clamp(1.5rem, 2vw + 0.8rem, 2.2rem);
+    }
+
+    .score-summary {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin: 0 0 20px;
+      color: var(--primary-dark);
+    }
+
+    .result-item {
+      border-radius: 16px;
+      padding: 16px 14px;
+      margin-bottom: 14px;
+      border: 1px solid var(--border);
+    }
+
+    .result-item.correct {
+      background: var(--success-bg);
+      border-color: #bce8d2;
+    }
+
+    .result-item.wrong {
+      background: var(--error-bg);
+      border-color: #f0b5b0;
+    }
+
+    .result-item h3 {
+      margin: 0 0 8px;
+      font-size: 1.05rem;
+    }
+
+    .result-item p {
+      margin: 6px 0;
+      line-height: 1.7;
+      font-size: 0.98rem;
+    }
+
+    .result-item strong {
+      color: var(--text);
+    }
+
+    .result-actions {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    @media (max-width: 640px) {
+      .container {
+        padding: 18px 12px 40px;
+      }
+
+      .header {
+        padding: 22px 18px;
+      }
+
+      .quiz-card,
+      .results {
+        padding: 16px 12px;
+      }
+
+      .question-card {
+        padding: 14px 12px;
+      }
+
+      .option {
+        padding: 12px 10px;
+      }
+
+      .question-header {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <h1>電腦與網路基礎知識</h1>
+      <p>共 10 題，每題 10 分，滿分 100 分</p>
+      <div class="score-chip">請選出每題正確答案</div>
+    </header>
+
+    <section id="quizForm" class="quiz-card">
+      <div id="quizContainer"></div>
+
+      <div class="submit-row">
+        <button type="button" id="submitBtn" class="btn btn-primary">提交答案</button>
+      </div>
+    </section>
+
+    <section id="resultSection" class="results hidden" aria-live="polite">
+      <h2>測驗結果</h2>
+      <p id="scoreSummary" class="score-summary"></p>
+      <div id="resultList"></div>
+
+      <div class="result-actions">
+        <button type="button" id="restartBtn" class="btn btn-secondary">重新測驗</button>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const quizData = [
+      {
+        question: "以下哪一項是電腦的中央處理單元？",
+        options: [
+          "RAM",
+          "CPU",
+          "SSD",
+          "GPU"
+        ],
+        answer: 1,
+        explanation: "CPU（Central Processing Unit）是電腦的主要處理器，負責執行指令與計算。"
+      },
+      {
+        question: "RAM 的主要用途是什麼？",
+        options: [
+          "長期儲存資料",
+          "暫存目前正在使用的資料與程式",
+          "管理網路連線",
+          "輸出影像到螢幕"
+        ],
+        answer: 1,
+        explanation: "RAM 是隨機存取記憶體，主要用來暫時存放電腦正在使用的資料與程式，提高執行效率。"
+      },
+      {
+        question: "下列哪一個是網路中常見的 IP 位址類型？",
+        options: [
+          "IPv4",
+          "USB",
+          "HTML",
+          "DNS"
+        ],
+        answer: 0,
+        explanation: "IPv4 是常見的網際網路協定版本 4，用來為裝置分配網路位址。"
+      },
+      {
+        question: "HTTP 的全名為何？",
+        options: [
+          "HyperText Transfer Protocol",
+          "High Transmission Transfer Program",
+          "Host Transfer Tool Procedure",
+          "Hyperlink Text Terminal Protocol"
+        ],
+        answer: 0,
+        explanation: "HTTP 是超文本傳輸協定，用於瀏覽器與伺服器之間傳輸網頁資料。"
+      },
+      {
+        question: "以下哪一種裝置最適合用來輸入文字？",
+        options: [
+          "印表機",
+          "鍵盤",
+          "喇叭",
+          "螢幕"
+        ],
+        answer: 1,
+        explanation: "鍵盤是輸入裝置，使用者可透過它輸入文字與指令。"
+      },
+      {
+        question: "防火牆（Firewall）的主要功能是什麼？",
+        options: [
+          "提升硬碟讀取速度",
+          "過濾與控制網路流量",
+          "增加記憶體容量",
+          "壓縮圖片檔案"
+        ],
+        answer: 1,
+        explanation: "防火牆主要用來監控與限制進出網路的資料，避免未授權的連線或攻擊。"
+      },
+      {
+        question: "以下哪一項最能說明「位元組（Byte）」？",
+        options: [
+          "1 個字元",
+          "8 個位元（bits）",
+          "1000 個位元",
+          "1 個圖片檔"
+        ],
+        answer: 1,
+        explanation: "1 Byte 等於 8 bits，是電腦常見的資料單位。"
+      },
+      {
+        question: "路由器（Router）的主要作用是什麼？",
+        options: [
+          "儲存大量照片",
+          "將不同網路之間的資料轉送",
+          "增加電腦處理速度",
+          "接收鍵盤輸入"
+        ],
+        answer: 1,
+        explanation: "路由器主要用於將資料在不同網路之間轉送，讓多台裝置可連上網際網路。"
+      },
+      {
+        question: "下列哪一個不是常見的儲存裝置？",
+        options: [
+          "SSD",
+          "HDD",
+          "RAM",
+          "USB 隨身碟"
+        ],
+        answer: 2,
+        explanation: "RAM 是記憶體，不是長期儲存裝置；SSD、HDD、USB 隨身碟則是常見儲存媒體。"
+      },
+      {
+        question: "Wi‑Fi 常見的 2.4 GHz 與 5 GHz 主要差異為何？",
+        options: [
+          "2.4 GHz 較容易被視訊輸出裝置使用",
+          "5 GHz 通常較快但覆蓋距離較短",
+          "2.4 GHz 只能用在手機，5 GHz 只能用在電腦",
+          "這兩者完全沒有差異"
+        ],
+        answer: 1,
+        explanation: "5 GHz 通常頻寬較大且速度較快，但覆蓋範圍通常較短；2.4 GHz 則覆蓋較遠但速度較慢。"
+      }
+    ];
+
+    const quizContainer = document.getElementById("quizContainer");
+    const submitBtn = document.getElementById("submitBtn");
+    const quizForm = document.getElementById("quizForm");
+    const resultSection = document.getElementById("resultSection");
+    const scoreSummary = document.getElementById("scoreSummary");
+    const resultList = document.getElementById("resultList");
+    const restartBtn = document.getElementById("restartBtn");
+
+    let selectedAnswers = Array(quizData.length).fill(null);
+
+    function renderQuiz() {
+      quizContainer.innerHTML = quizData.map((item, index) => {
+        const optionsHtml = item.options.map((option, optIndex) => {
+          const letter = String.fromCharCode(65 + optIndex);
+          const isChecked = selectedAnswers[index] === optIndex ? "checked" : "";
+          return `
+            <label class="option">
+              <input type="radio" name="q${index}" value="${optIndex}" ${isChecked} />
+              <span class="option-label">${letter}. ${option}</span>
+            </label>
+          `;
+        }).join("");
+
+        return `
+          <div class="question-card" id="question-${index}">
+            <div class="question-header">
+              <span class="question-number">第 ${index + 1} 題</span>
+            </div>
+            <p class="question-text">${item.question}</p>
+            <div class="options">
+              ${optionsHtml}
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function highlightMissingQuestions(missingIndexes) {
+      document.querySelectorAll(".question-card").forEach((card, index) => {
+        card.classList.toggle("missing", missingIndexes.includes(index));
+      });
+    }
+
+    function formatChoiceText(item, index) {
+      if (index === null) return "未作答";
+      return `${String.fromCharCode(65 + index)}. ${item.options[index]}`;
+    }
+
+    function validateAndSubmit() {
+      const missingIndexes = selectedAnswers
+        .map((value, index) => (value === null ? index : null))
+        .filter(index => index !== null);
+
+      if (missingIndexes.length > 0) {
+        highlightMissingQuestions(missingIndexes);
+        const firstIndex = missingIndexes[0];
+        const questionNumber = firstIndex + 1;
+        alert(`第 ${questionNumber} 題尚未作答，請先完成所有題目後再提交。已保留你先前選擇的答案。`);
+        document.getElementById(`question-${firstIndex}`).scrollIntoView({
+          behavior: "smooth",
+          block: "center"
+        });
+        return;
+      }
+
+      highlightMissingQuestions([]);
+      showResults();
+    }
+
+    function showResults() {
+      let totalScore = 0;
+
+      resultList.innerHTML = quizData.map((item, index) => {
+        const selectedIndex = selectedAnswers[index];
+        const isCorrect = selectedIndex === item.answer;
+        if (isCorrect) totalScore += 10;
+
+        const selectedText = formatChoiceText(item, selectedIndex);
+        const correctText = formatChoiceText(item, item.answer);
+
+        return `
+          <div class="result-item ${isCorrect ? "correct" : "wrong"}">
+            <h3>第 ${index + 1} 題：${isCorrect ? "正確" : "錯誤"}</h3>
+            <p><strong>你的答案：</strong> ${selectedText}</p>
+            <p><strong>正確答案：</strong> ${correctText}</p>
+            <p><strong>解析：</strong> ${item.explanation}</p>
+          </div>
+        `;
+      }).join("");
+
+      scoreSummary.textContent = `總分：${totalScore} / 100`;
+      quizForm.classList.add("hidden");
+      resultSection.classList.remove("hidden");
+    }
+
+    function restartQuiz() {
+      selectedAnswers = Array(quizData.length).fill(null);
+      renderQuiz();
+      highlightMissingQuestions([]);
+      resultSection.classList.add("hidden");
+      quizForm.classList.remove("hidden");
+    }
+
+    quizContainer.addEventListener("change", (event) => {
+      if (event.target.matches('input[type="radio"]')) {
+        const name = event.target.name;
+        const qIndex = Number(name.replace("q", ""));
+        selectedAnswers[qIndex] = Number(event.target.value);
+      }
+    });
+
+    submitBtn.addEventListener("click", validateAndSubmit);
+    restartBtn.addEventListener("click", restartQuiz);
+
+    renderQuiz();
+  </script>
+</body>
+</html>
